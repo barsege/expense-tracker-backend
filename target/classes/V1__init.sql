@@ -1,0 +1,35 @@
+CREATE TABLE users(
+	id BIGSERIAL PRIMARY KEY,
+	email varchar(255) NOT NULL UNIQUE,
+	password_hash varchar(255) NOT NULL,
+	role varchar(20) NOT NULL,
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE categories (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    UNIQUE (user_id, name),
+	CHECK (type IN ('INCOME', 'EXPENSE'))
+);
+
+CREATE TABLE transactions (
+	id BIGSERIAL PRIMARY KEY,
+	user_id BIGINT NOT NULL,
+	category_id BIGINT NOT NULL,
+	amount numeric(14,2) NOT NULL,
+	currency VARCHAR(3) NOT NULL,
+	transaction_date DATE NOT NULL,
+	description VARCHAR(255),
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (user_id) REFERENCES users(id),
+	FOREIGN KEY (category_id) REFERENCES categories(id)
+
+)	
