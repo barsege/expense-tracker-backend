@@ -56,6 +56,30 @@ public class CategoryService {
 		return mapToResponse(category);
 	}
 	
+	public CategoryResponse updateCategory(Long userId, Long categoryId, String name, CategoryType type) {
+		Category category = categoryRepository
+				.findByIdAndUser_Id(categoryId, userId)
+				.orElseThrow(() -> new IllegalArgumentException("Category not found"));
+		
+		if(!category.getName().equals(name) && categoryRepository.existsByUser_IdAndName(userId, name)) {
+			throw new IllegalArgumentException("Category already exists for this user");
+		}
+		
+		category.setName(name);
+		category.setType(type);
+		Category savedCategory = categoryRepository.save(category);	
+		return mapToResponse(savedCategory);
+		
+		
+	}
+	
+	public void deleteCategory (Long userId, Long categoryId) {
+		Category category = categoryRepository.findByIdAndUser_Id(categoryId, userId)
+							.orElseThrow(() -> new IllegalArgumentException("Category Not Found"));
+		
+		categoryRepository.delete(category);
+	}
+	
 	private CategoryResponse mapToResponse (Category category) {
 		return new CategoryResponse(
 				category.getId(), 
