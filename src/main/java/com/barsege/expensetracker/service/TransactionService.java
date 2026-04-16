@@ -3,6 +3,10 @@ package com.barsege.expensetracker.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,15 +57,25 @@ public class TransactionService {
 	}
 	
 	@Transactional(readOnly = true)
-	public List<TransactionResponse> getTransactionsByUser(Long userId){
+	public Page<TransactionResponse> getTransactionsByUser(Long userId, int page, int size, String sortBy, String direction){
 		userRepository.findById(userId)
 				.orElseThrow(() -> new IllegalArgumentException("User not found"));
 		
-		List<ExpenseTransaction> transactions = transactionRepository.findByUser_Id(userId);
+		Sort.Direction sortDirection;
 		
-		return transactions.stream()
-				.map(this::mapToResponse)
-				.toList();
+		if(direction.equalsIgnoreCase("asc")) {
+			sortDirection = Sort.Direction.ASC;
+		} else {
+			sortDirection = Sort.Direction.DESC;
+		}
+		
+		Sort sort = Sort.by(sortDirection, sortBy);
+		
+		Pageable pageable = PageRequest.of(page, size, sort);
+		
+		Page<ExpenseTransaction> transactions = transactionRepository.findByUser_Id(userId, pageable);
+		
+		return transactions.map(this::mapToResponse);
 	}
 	
 	@Transactional(readOnly = true)

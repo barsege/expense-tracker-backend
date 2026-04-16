@@ -2,6 +2,7 @@ package com.barsege.expensetracker.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,8 +36,11 @@ public class TransactionController {
 	}
 	
 	@GetMapping
-	public List<TransactionResponse> getTransactions(@RequestParam Long userId) {
-		return transactionService.getTransactionsByUser(userId);
+	public Page<TransactionResponse> getTransactions(@RequestParam Long userId, @RequestParam(defaultValue = "0") int page,
+														@RequestParam(defaultValue = "10") int size,
+														@RequestParam(defaultValue = "transactionDate") String sortBy,
+														@RequestParam(defaultValue = "desc") String direction) {
+		return transactionService.getTransactionsByUser(userId, page, size, sortBy, direction);
 	}
 	
 	@GetMapping("/{id}")
