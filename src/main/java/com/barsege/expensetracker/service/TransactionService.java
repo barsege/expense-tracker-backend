@@ -57,7 +57,7 @@ public class TransactionService {
 	}
 	
 	@Transactional(readOnly = true)
-	public Page<TransactionResponse> getTransactionsByUser(Long userId, int page, int size, String sortBy, String direction){
+	public Page<TransactionResponse> getTransactionsByUser(Long userId, int page, int size, String sortBy, String direction, Long categoryId){
 		userRepository.findById(userId)
 				.orElseThrow(() -> new IllegalArgumentException("User not found"));
 		
@@ -73,7 +73,12 @@ public class TransactionService {
 		
 		Pageable pageable = PageRequest.of(page, size, sort);
 		
-		Page<ExpenseTransaction> transactions = transactionRepository.findByUser_Id(userId, pageable);
+		Page<ExpenseTransaction> transactions;
+		if(categoryId == null) {
+			transactions = transactionRepository.findByUser_Id(userId, pageable);
+		} else {
+			transactions = transactionRepository.findByUser_IdAndCategory_Id(userId, categoryId, pageable);
+		}
 		
 		return transactions.map(this::mapToResponse);
 	}

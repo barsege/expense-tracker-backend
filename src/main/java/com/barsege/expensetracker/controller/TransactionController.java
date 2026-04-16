@@ -39,8 +39,9 @@ public class TransactionController {
 	public Page<TransactionResponse> getTransactions(@RequestParam Long userId, @RequestParam(defaultValue = "0") int page,
 														@RequestParam(defaultValue = "10") int size,
 														@RequestParam(defaultValue = "transactionDate") String sortBy,
-														@RequestParam(defaultValue = "desc") String direction) {
-		return transactionService.getTransactionsByUser(userId, page, size, sortBy, direction);
+														@RequestParam(defaultValue = "desc") String direction,
+														@RequestParam(required = false) Long categoryId) {
+		return transactionService.getTransactionsByUser(userId, page, size, sortBy, direction, categoryId);
 	}
 	
 	@GetMapping("/{id}")
