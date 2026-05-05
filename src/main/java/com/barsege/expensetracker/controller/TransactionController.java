@@ -1,8 +1,10 @@
 package com.barsege.expensetracker.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,8 +42,14 @@ public class TransactionController {
 														@RequestParam(defaultValue = "10") int size,
 														@RequestParam(defaultValue = "transactionDate") String sortBy,
 														@RequestParam(defaultValue = "desc") String direction,
-														@RequestParam(required = false) Long categoryId) {
-		return transactionService.getTransactionsByUser(userId, page, size, sortBy, direction, categoryId);
+														@RequestParam(required = false) Long categoryId,
+														@RequestParam(required = false)
+														@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+														LocalDate startDate,
+														@RequestParam(required = false)
+														@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+														LocalDate endDate) {
+		return transactionService.getTransactionsByUser(userId, page, size, sortBy, direction, categoryId, startDate, endDate);
 	}
 	
 	@GetMapping("/{id}")

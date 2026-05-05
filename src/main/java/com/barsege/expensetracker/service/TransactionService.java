@@ -1,5 +1,6 @@
 package com.barsege.expensetracker.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +58,7 @@ public class TransactionService {
 	}
 	
 	@Transactional(readOnly = true)
-	public Page<TransactionResponse> getTransactionsByUser(Long userId, int page, int size, String sortBy, String direction, Long categoryId){
+	public Page<TransactionResponse> getTransactionsByUser(Long userId, int page, int size, String sortBy, String direction, Long categoryId,LocalDate startDate,LocalDate endDate){
 		userRepository.findById(userId)
 				.orElseThrow(() -> new IllegalArgumentException("User not found"));
 		
@@ -75,9 +76,25 @@ public class TransactionService {
 		
 		Page<ExpenseTransaction> transactions;
 		if(categoryId == null) {
-			transactions = transactionRepository.findByUser_Id(userId, pageable);
+			if(startDate != null && endDate != null) {
+				transactions = transactionRepository.findByUser_IdAndTransactionDateBetween(userId, startDate, endDate, pageable);
+			} else if(startDate != null) {
+				transactions = transactionRepository.findByUser_IdAndTransactionDateGreaterThanEqual(userId, startDate, pageable);
+			} else if(endDate != null) {
+				transactions = transactionRepository.findByUser_IdAndTransactionDateLessThanEqual(userId, endDate, pageable);
+			}else {
+				transactions = transactionRepository.findByUser_Id(userId, pageable);
+			}
 		} else {
-			transactions = transactionRepository.findByUser_IdAndCategory_Id(userId, categoryId, pageable);
+			if(startDate != null && endDate != null) {
+				transactions = transactionRepository.findByUser_IdAndCategory_IdAndTransactionDateBetween(userId, categoryId, startDate, endDate, pageable);
+			} else if(startDate != null) {
+				transactions = transactionRepository.findByUser_IdAndCategory_IdAndTransactionDateGreaterThanEqual(userId, categoryId, startDate, pageable);
+			} else if(endDate != null) {
+				transactions = transactionRepository.findByUser_IdAndCategory_IdAndTransactionDateLessThanEqual(userId, categoryId, endDate, pageable);
+			}else {
+				transactions = transactionRepository.findByUser_IdAndCategory_Id(userId, categoryId, pageable);
+			}
 		}
 		
 		return transactions.map(this::mapToResponse);
