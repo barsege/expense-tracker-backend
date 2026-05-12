@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.barsege.expensetracker.dto.auth.AuthResponse;
+import com.barsege.expensetracker.dto.auth.LoginRequest;
 import com.barsege.expensetracker.dto.auth.RegisterRequest;
 import com.barsege.expensetracker.service.AuthService;
 
@@ -24,5 +25,10 @@ public class AuthController {
 	@PostMapping("/register")
 	public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
 	    return authService.register(request);
+	}
+	
+	@PostMapping("/login")
+	public AuthResponse login(@Valid @RequestBody LoginRequest loginRequest) {
+		return authService.login(loginRequest);
 	}
 }
